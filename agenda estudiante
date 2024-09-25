@@ -1,0 +1,95 @@
+#include <iostream>
+#include <string>
+#include <algorithm>
+
+struct Estudiante {
+    std::string nombre;
+    int codigo;
+    float nota;
+    Estudiante* siguiente;
+};
+
+Estudiante* crearEstudiante(const std::string& nombre, int codigo, float nota) {
+    Estudiante* nuevoEstudiante = new Estudiante;
+    nuevoEstudiante->nombre = nombre;
+    nuevoEstudiante->codigo = codigo;
+    nuevoEstudiante->nota = nota;
+    nuevoEstudiante->siguiente = nullptr;
+    return nuevoEstudiante;
+}
+
+void insertarEstudiante(Estudiante*& cabeza, Estudiante* nuevoEstudiante) {
+    nuevoEstudiante->siguiente = cabeza;
+    cabeza = nuevoEstudiante;
+}
+
+void ordenarPorNota(Estudiante*& cabeza) {
+    if (cabeza == nullptr) return;
+
+    bool intercambiado;
+    do {
+        Estudiante* actual = cabeza;
+        intercambiado = false;
+
+        while (actual->siguiente != nullptr) {
+            if (actual->nota < actual->siguiente->nota) {
+                std::swap(actual->nombre, actual->siguiente->nombre);
+                std::swap(actual->codigo, actual->siguiente->codigo);
+                std::swap(actual->nota, actual->siguiente->nota);
+                intercambiado = true;
+            }
+            actual = actual->siguiente;
+        }
+    } while (intercambiado);
+}
+
+void imprimirLista(Estudiante* cabeza) {
+    Estudiante* actual = cabeza;
+    while (actual != nullptr) {
+        std::cout << "Nombre: " << actual->nombre 
+                  << ", Código: " << actual->codigo 
+                  << ", Nota: " << actual->nota << std::endl;
+        actual = actual->siguiente;
+    }
+}
+
+void mostrarNotaMayorYMenor(Estudiante* cabeza) {
+    if (cabeza == nullptr) {
+        std::cout << "La lista está vacía." << std::endl;
+        return;
+    }
+
+    float notaMayor = cabeza->nota;
+    Estudiante* actual = cabeza;
+    while (actual->siguiente != nullptr) {
+        actual = actual->siguiente;
+    }
+    float notaMenor = actual->nota;
+
+    std::cout << "Nota mayor: " << notaMayor << std::endl;
+    std::cout << "Nota menor: " << notaMenor << std::endl;
+}
+
+int main() {
+    Estudiante* listaEstudiantes = nullptr;
+
+    insertarEstudiante(listaEstudiantes, crearEstudiante("Juan Pérez", 101, 85.5));
+    insertarEstudiante(listaEstudiantes, crearEstudiante("Ana Gómez", 102, 92.0));
+    insertarEstudiante(listaEstudiantes, crearEstudiante("Luis Rodríguez", 103, 78.0));
+
+    ordenarPorNota(listaEstudiantes);
+
+    std::cout << "Lista de estudiantes ordenada por nota:" << std::endl;
+    imprimirLista(listaEstudiantes);
+
+    mostrarNotaMayorYMenor(listaEstudiantes);
+
+    Estudiante* temp;
+    while (listaEstudiantes != nullptr) {
+        temp = listaEstudiantes;
+        listaEstudiantes = listaEstudiantes->siguiente;
+        delete temp;
+    }
+
+    return 0;
+}
